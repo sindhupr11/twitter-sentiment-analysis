@@ -1,21 +1,47 @@
-import button from "../api/components/button"
+"use client"
+
+import React, { useState } from 'react';
+import InputBox from './components/inputbox';
+import SubmitButton from './components/submitbutton';
 
 export default function Home() {
+  const [query, setQuery] = useState('');
+  const [sentiment, setSentiment] = useState('');
+
+  const handleAnalyze = async () => {
+    try {
+      const response = await fetch('/analyze_sentiment/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ tweet: query })
+      });
+      const data = await response.json();
+      setSentiment(data.sentiment);
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
   return (
     <main className="flex min-h-screen flex-col items-center justify-between p-24">
-      <div className="z-10 w-full max-w-5xl items-center justify-between font-mono text-sm lg:flex">
-        <div className="fixed bottom-0 left-0 flex h-48 w-full items-end justify-center bg-gradient-to-t from-white via-white dark:from-black dark:via-black lg:static lg:h-auto lg:w-auto lg:bg-none">
-        
+  <div className="relative flex flex-col items-center justify-center max-w-5xl w-full h-full before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px]">
+    <h1 className="text-4xl font-bold mb-8 text-center text-gray-800 dark:text-white lg:text-5xl">Twitter Sentiment Analyzer</h1>
+    <div className="z-10 w-full max-w-3xl flex flex-col items-center justify-center font-mono text-sm lg:flex lg:space-x-4">
+      <div className="flex flex-col items-center justify-start">
+        <InputBox placeholder="Enter query here" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <div className="mt-4">
+          <SubmitButton onClick={handleAnalyze} label="Analyze" className="px-4 py-2 text-lg" />
         </div>
       </div>
+    </div>
+    {sentiment !== '' && <p className="mt-4 text-center">Sentiment: {sentiment}</p>}
+  </div>
+</main>
 
-      <div className="relative flex place-items-center before:absolute before:h-[300px] before:w-[480px] before:-translate-x-1/2 before:rounded-full before:bg-gradient-radial before:from-white before:to-transparent before:blur-2xl before:content-[''] after:absolute after:-z-20 after:h-[180px] after:w-[240px] after:translate-x-1/3 after:bg-gradient-conic after:from-sky-200 after:via-blue-200 after:blur-2xl after:content-[''] before:dark:bg-gradient-to-br before:dark:from-transparent before:dark:to-blue-700 before:dark:opacity-10 after:dark:from-sky-900 after:dark:via-[#0141ff] after:dark:opacity-40 before:lg:h-[360px]">
-        
-      </div>
 
-      <div className="mb-32 grid text-center lg:mb-0 lg:grid-cols-4 lg:text-left">
-       
-      </div>
-    </main>
+
+
   );
 }
