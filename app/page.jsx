@@ -10,13 +10,16 @@ export default function Home() {
 
   const handleAnalyze = async () => {
     try {
-      const response = await fetch('/analyze_sentiment/', {
+      const response = await fetch('/analyze_sentiment', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({ tweet: query })
       });
+      if (!response.ok) {
+        throw new Error('Failed to analyze sentiment');
+      }
       const data = await response.json();
       setSentiment(data.sentiment);
     } catch (error) {
@@ -32,9 +35,14 @@ export default function Home() {
             <InputBox placeholder="Enter query here" value={query} onChange={(e) => setQuery(e.target.value)} />
             <div className="mt-4"></div>
             <SubmitButton onClick={handleAnalyze} label="Analyze" className="text-lg" />
+        
+            {sentiment && (
+  <p className={`mt-4 text-center ${sentiment === 'positive' ? 'text-green-600' : sentiment === 'negative' ? 'text-red-600' : 'text-gray-600'}`}>
+    Sentiment: {sentiment}
+  </p>
+)}
         </div>
-      {sentiment !== '' && <p className="mt-4 text-center">Sentiment: {sentiment}</p>}
-    </div>
+      </div>
   </main>
 
   )}
